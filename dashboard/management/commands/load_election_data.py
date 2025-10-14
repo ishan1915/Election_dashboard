@@ -35,7 +35,15 @@ class Command(BaseCommand):
                 constituency_name = row.get('constituency_name', 'Unknown')
                 party_name = row.get('party', 'Independent')
                 year_value = int(row.get('year', 0) or 0)
+                
 
+                raw_gender = str(row.get('sex', '') or '').strip().upper()
+                if raw_gender == 'M':
+                    gender_value = 'Male'
+                elif raw_gender == 'F':
+                    gender_value = 'Female'
+                else:
+                    gender_value = 'Unknown'
                 # Create or get related objects
                 state, _ = State.objects.get_or_create(name=state_name)
                 constituency, _ = Constituency.objects.get_or_create(
@@ -59,7 +67,7 @@ class Command(BaseCommand):
                 # Create Candidate entry
                 Candidate.objects.create(
                     name=row.get('candidate', 'Unknown'),
-                    gender=row.get('gender', 'Unknown'),
+                    gender=gender_value,
                     party=party,
                     state=state,
                     constituency=constituency,
