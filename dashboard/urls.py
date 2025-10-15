@@ -17,6 +17,14 @@ urlpatterns = [
 
     path("vote-share/", vote_share_api, name="vote-share"),
 
+    path("turnout-summary/", turnout_summary, name="turnout-summary"),
+
+    path("party-seat-change/", party_seat_change, name="party-seat-change"),
+
+    path('education-win-correlation/', education_win_correlation,name=education_win_correlation),
+
+
+
 
 
      
