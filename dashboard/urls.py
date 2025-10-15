@@ -21,7 +21,13 @@ urlpatterns = [
 
     path("party-seat-change/", party_seat_change, name="party-seat-change"),
 
-    path('education-win-correlation/', education_win_correlation,name=education_win_correlation),
+    path('education-win-correlation/', education_win_correlation,name="education_win_correlation"),
+
+    path("narrow-victory-margins/", narrow_victory_margins, name="narrow-victory-margins"),
+
+    path('women-candidates-percentage/', women_candidates_percentage, name='women-candidates-percentage'),
+
+
 
 
 

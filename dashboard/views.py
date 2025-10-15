@@ -7,7 +7,9 @@ from .filters import CandidateFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.db.models import Count,Avg,Sum
+from django.db.models import Count,Avg,Sum,Q
+
+from dashboard import models
 
 
 
@@ -239,19 +241,17 @@ def party_seat_change(request):
 @api_view(['GET'])
 def education_win_correlation(request):
      
-    year = request.GET.get('year')
-    filters = {}
-    if year:
-        filters['year'] = year
+    years = [2009, 2014, 2019]
 
     data = (
         CandidateEducation.objects
-        .filter(**filters)
-        .values('education')
+        .filter(year__in=years)
+        .values('education', 'year')
         .annotate(
             total_candidates=Count('id'),
-            total_winners=Count('id', filter=Q(result='Won'))
+            total_winners=Count('id', filter=Q(result_status='Won'))
         )
+        .order_by('education', 'year')
     )
 
     result = []
@@ -260,9 +260,80 @@ def education_win_correlation(request):
         won = d['total_winners']
         result.append({
             'education': d['education'],
-            'total_candidates': total,
-            'total_winners': won,
+            'year': d['year'],
             'win_percentage': round((won / total) * 100, 2) if total > 0 else 0
         })
 
     return Response(result)
+
+
+
+
+
+@api_view(['GET'])
+def narrow_victory_margins(request):
+    year = request.GET.get('year')
+
+    queryset = Candidate.objects.filter(position=1, margin__isnull=False)
+    if year:
+        queryset = queryset.filter(election_year__year=year)
+
+    narrowest = (
+        queryset
+        .order_by('margin')[:10]
+        .values(
+            'state__name',
+            'constituency__name',
+            'party__name',
+            'name',
+            'margin',
+            'election_year__year'
+        )
+    )
+
+    data = [
+        {
+            'state': c['state__name'],
+            'constituency': c['constituency__name'],
+            'party': c['party__name'],
+            'candidate': c['name'],
+            'margin': c['margin'],
+            'year': c['election_year__year']
+        }
+        for c in narrowest
+    ]
+
+    return Response(data)
+
+
+
+ 
+
+@api_view(['GET'])
+def women_candidates_percentage(request):
+    """Calculate percentage of women candidates for selected election years."""
+    
+    # Only include these years
+    valid_years = [1991, 1996, 1998, 1999, 2004, 2009, 2014, 2019]
+    data = []
+
+    for year in valid_years:
+        total = Candidate.objects.filter(election_year__year=year).count()
+        female = Candidate.objects.filter(
+            election_year__year=year,
+            gender__iexact='Female'
+        ).count()
+
+        if total > 0:
+            female_percentage = round((female / total) * 100, 2)
+        else:
+            female_percentage = 0.0
+
+        data.append({
+            "year": year,
+            "female_percentage": female_percentage,
+            "total_candidates": total,
+            "female_candidates": female,
+        })
+
+    return Response({"yearly_data": data})

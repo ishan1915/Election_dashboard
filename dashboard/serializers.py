@@ -13,6 +13,11 @@ class ConstituencySerializer(serializers.ModelSerializer):
         model = Constituency
         fields = '__all__'
 
+class ConstituencyNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Constituency
+        fields = '__all__'
+
 class PartySerializer(serializers.ModelSerializer):
     class Meta:
         model = Party
@@ -27,11 +32,12 @@ class CandidateListSerializer(serializers.ModelSerializer):
     state = serializers.CharField(source='state.name', read_only=True)
     party = serializers.CharField(source='party.name', read_only=True)
     year = serializers.IntegerField(source='election_year.year', read_only=True)
+    constituency=serializers.CharField(source='constituency.name')
     votes = serializers.SerializerMethodField()
     
     class Meta:
         model = Candidate
-        fields = ['state', 'name', 'party', 'year', 'votes', 'result_status']
+        fields = ['state', 'name', 'party', 'year','constituency', 'votes', 'result_status']
 
     def get_votes(self, obj):
          
