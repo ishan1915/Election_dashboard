@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'dashboard',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -146,5 +147,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://election-dashboard-frontend-74vc.onrender.com",
 ]
 
-# Optionally (for local testing)
+ 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+ 

@@ -17,7 +17,7 @@ class Command(BaseCommand):
             "Graduate Professional": "Graduate",
             "Graduate": "Graduate",
             "Post Graduate": "Post Graduate",
-            "Doctrate": "Doctorate",
+            "Doctorate": "Doctorate",
             "8th Pass": "8th Pass",
             "10th Pass": "10th Pass",
             "12th Pass": "12th Pass",
