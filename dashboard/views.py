@@ -21,6 +21,9 @@ class CandidateListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = CandidateFilter
     
+    def get_queryset(self):
+         return Candidate.objects.filter(result_status__iexact='Won')
+    
 class ConstituencyViewSet(viewsets.ModelViewSet):
     queryset = Constituency.objects.all()
     serializer_class = ConstituencySerializer
